@@ -1,0 +1,341 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Interactive Image Gallery</title>
+    
+    <style>
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            color: #333;
+            padding: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        header h1 {
+            margin-bottom: 20px;
+            color: #2c3e50;
+        }
+
+        
+        .filter-buttons {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            background-color: #fff;
+            color: #555;
+            border-radius: 25px;
+            cursor: pointer;
+            font-weight: 600;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover, .btn.active {
+            background-color: #3498db;
+            color: #fff;
+        }
+
+        
+        .gallery-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 20px;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        
+        .gallery-item {
+            position: relative;
+            overflow: hidden;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            cursor: pointer;
+            aspect-ratio: 4 / 3;
+            display: block;
+        }
+
+        
+        .gallery-img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            transition: transform 0.5s ease;
+        }
+
+        .overlay {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            opacity: 0;
+            transition: opacity 0.4s ease;
+        }
+
+        .overlay span {
+            color: #fff;
+            font-size: 1.2rem;
+            border: 2px solid #fff;
+            padding: 8px 16px;
+            text-transform: uppercase;
+            transform: translateY(20px);
+            transition: transform 0.4s ease;
+        }
+
+        .gallery-item:hover .gallery-img {
+            transform: scale(1.1);
+        }
+
+        .gallery-item:hover .overlay {
+            opacity: 1;
+        }
+
+        .gallery-item:hover .overlay span {
+            transform: translateY(0);
+        }
+
+        
+        .lightbox {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.9);
+            display: none; 
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .lightbox-content {
+            max-width: 80%;
+            max-height: 80%;
+            text-align: center;
+        }
+
+        #lightbox-img {
+            max-width: 100%;
+            max-height: 75vh;
+            border-radius: 4px;
+            box-shadow: 0 5px 25px rgba(0,0,0,0.5);
+        }
+
+        #lightbox-caption {
+            color: #fff;
+            margin-top: 15px;
+            font-size: 1.2rem;
+        }
+
+        
+        .close-btn {
+            position: absolute;
+            top: 20px;
+            right: 35px;
+            color: #fff;
+            font-size: 40px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .close-btn:hover {
+            color: #bbb;
+        }
+
+        .nav-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            background: rgba(255, 255, 255, 0.1);
+            color: white;
+            border: none;
+            padding: 16px;
+            font-size: 24px;
+            font-weight: bold;
+            cursor: pointer;
+            border-radius: 50%;
+            transition: 0.3s;
+            user-select: none;
+        }
+
+        .nav-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        .prev-btn { left: 20px; }
+        .next-btn { right: 20px; }
+
+        @media (max-width: 600px) {
+            .nav-btn {
+                padding: 10px;
+                font-size: 18px;
+            }
+            .prev-btn { left: 5px; }
+            .next-btn { right: 5px; }
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>Interactive Image Gallery</h1>
+        <div class="filter-buttons">
+            <button class="btn active" data-filter="all">All</button>
+            <button class="btn" data-filter="nature">Nature</button>
+            <button class="btn" data-filter="architecture">Architecture</button>
+            <button class="btn" data-filter="animals">Animals</button>
+        </div>
+    </header>
+
+    <main class="gallery-container">
+        <div class="gallery-item" data-category="nature">
+            <img src="https://static.vecteezy.com/system/resources/thumbnails/057/779/711/small/majestic-misty-mountain-valley-lush-green-coniferous-forest-landscape-photo.jpeg" alt="Forest and Mountains" class="gallery-img">
+            <div class="overlay"><span>Nature</span></div>
+        </div>
+        <div class="gallery-item" data-category="architecture">
+            <img src="https://i.pinimg.com/736x/c1/10/e0/c110e07125a6cab6652e38b650e52822.jpg/" alt="Modern Building" class="gallery-img">
+            <div class="overlay"><span>Architecture</span></div>
+        </div>
+        <div class="gallery-item" data-category="animals">
+            <img src="https://t3.ftcdn.net/jpg/01/15/58/32/360_F_115583246_fAZ4K7xDursvKRnynSmTeYFgKx3k4y2Z.jpg" alt="Pug Puppy" class="gallery-img">
+            <div class="overlay"><span>Animals</span></div>
+        </div>
+        <div class="gallery-item" data-category="nature">
+            <img src="https://images.stockcake.com/public/9/c/c/9cc77eca-b05e-4e88-ba40-bb8c98b03b3c_large/forest-path-curves-stockcake.jpg" alt="Forest Path" class="gallery-img">
+            <div class="overlay"><span>Nature</span></div>
+        </div>
+        <div class="gallery-item" data-category="architecture">
+            <img src="https://static.wixstatic.com/media/31c485_ff9ae8ca1bbf4539bafe2ea1f56728b6~mv2.jpg/v1/fill/w_760,h_760,al_c,q_85,usm_0.66_1.00_0.01,enc_auto/31c485_ff9ae8ca1bbf4539bafe2ea1f56728b6~mv2.jpg" alt="Classic Architecture" class="gallery-img">
+            <div class="overlay"><span>Architecture</span></div>
+        </div>
+        <div class="gallery-item" data-category="animals">
+            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQpC2kMh-JVWtpzE--H0eunfaxjGu1S39065w&s" alt="Big Cat" class="gallery-img">
+            <div class="overlay"><span>Animals</span></div>
+        </div>
+    </main>
+
+    <div id="lightbox" class="lightbox">
+        <span class="close-btn">&times;</span>
+        <button class="nav-btn prev-btn">&#10094;</button>
+        <div class="lightbox-content">
+            <img id="lightbox-img" src="" alt="Popup Image">
+            <div id="lightbox-caption"></div>
+        </div>
+        <button class="nav-btn next-btn">&#10095;</button>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", () => {
+            const galleryItems = document.querySelectorAll(".gallery-item");
+            const filterButtons = document.querySelectorAll(".btn");
+            const lightbox = document.getElementById("lightbox");
+            const lightboxImg = document.getElementById("lightbox-img");
+            const lightboxCaption = document.getElementById("lightbox-caption");
+            const closeBtn = document.querySelector(".close-btn");
+            const prevBtn = document.querySelector(".prev-btn");
+            const nextBtn = document.querySelector(".next-btn");
+
+            let currentIndex = 0;
+            let activeGallery = [...galleryItems]; 
+
+            
+            filterButtons.forEach(button => {
+                button.addEventListener("click", () => {
+                    document.querySelector(".btn.active").classList.remove("active");
+                    button.classList.add("active");
+
+                    const filterValue = button.getAttribute("data-filter");
+                    activeGallery = []; 
+
+                    galleryItems.forEach(item => {
+                        const category = item.getAttribute("data-category");
+                        if (filterValue === "all" || category === filterValue) {
+                            item.style.display = "block";
+                            activeGallery.push(item);
+                        } else {
+                            item.style.display = "none";
+                        }
+                    });
+                });
+            });
+
+            
+            function openLightbox(index) {
+                currentIndex = index;
+                const targetImg = activeGallery[currentIndex].querySelector(".gallery-img");
+                
+                lightboxImg.src = targetImg.src;
+                lightboxCaption.textContent = targetImg.alt;
+                lightbox.style.display = "flex";
+            }
+
+            function closeLightbox() {
+                lightbox.style.display = "none";
+            }
+
+            function nextImage() {
+                currentIndex = (currentIndex + 1) % activeGallery.length;
+                openLightbox(currentIndex);
+            }
+
+            function prevImage() {
+                currentIndex = (currentIndex - 1 + activeGallery.length) % activeGallery.length;
+                openLightbox(currentIndex);
+            }
+
+            
+            galleryItems.forEach((item) => {
+                item.addEventListener("click", () => {
+                    const indexInActive = activeGallery.indexOf(item);
+                    if (indexInActive !== -1) {
+                        openLightbox(indexInActive);
+                    }
+                });
+            });
+
+            
+            closeBtn.addEventListener("click", closeLightbox);
+            nextBtn.addEventListener("click", nextImage);
+            prevBtn.addEventListener("click", prevImage);
+
+            lightbox.addEventListener("click", (e) => {
+                if (e.target === lightbox) closeLightbox();
+            });
+
+            document.addEventListener("keydown", (e) => {
+                if (lightbox.style.display === "flex") {
+                    if (e.key === "ArrowRight") nextImage();
+                    if (e.key === "ArrowLeft") prevImage();
+                    if (e.key === "Escape") closeLightbox();
+                }
+            });
+        });
+    </script>
+</body>
+</html>
